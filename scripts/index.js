@@ -10,6 +10,11 @@ let decimal = document.querySelector("#decimal")
 let percent = document.querySelector("#percent");
 let equals = document.querySelector("#equals");
 
+let divideNode = document.querySelector("#divide");
+let multiplyNode = document.querySelector("#multiply");
+let subtractNode = document.querySelector("#subtract");
+let addNode = document.querySelector("#add");
+
 let numbers = document.querySelectorAll(".number");
 let operations = document.querySelectorAll(".operation");
 
@@ -44,8 +49,9 @@ function operate(operateOnFirst, operateOnSecond, operator) {
 
 function appendToDisplay() {
 
+    // Removes the background-color and resets display text
+    // if operator was pressed last
     if (operatorPressed) {
-        console.log(operatorPressed);
         display.textContent = "0";
 
         operatorPressed.classList.remove("operatorPressed");
@@ -61,8 +67,96 @@ function appendToDisplay() {
     display.appendChild(number);
 }
 
+function addDecimal() {
+    if (display.textContent.includes(".")) {
+
+    } else {
+        display.appendChild(document.createTextNode("."));
+    }
+}
+
+function clearText() {
+    display.textContent = "0";
+
+    firstNumber = null;
+    secondNumber = null;
+    operator = null;
+}
+
+function equalsFunction() {
+    if (operator === null) {
+
+    } else {
+        secondNumber = +display.textContent;
+
+        // Round answer to two decimal places
+        display.textContent = Math.round(operate(firstNumber, secondNumber, operator) * 100) / 100;
+
+        secondNumber = null;
+        operator = null;
+    }
+}
+
+function percentFunction() {
+    display.textContent = +display.textContent / 100;
+}
+
 numbers.forEach((number) => {
     number.addEventListener("click", appendToDisplay);
+});
+
+document.addEventListener("keydown", (e) => {
+
+    // Listens for numberic keyboard input
+    if (/\d/.test(e.key)) {
+        // Removes the background-color and resets display text
+        // if operator was pressed last
+        if (operatorPressed) {
+            display.textContent = "0";
+
+            operatorPressed.classList.remove("operatorPressed");
+            operatorPressed = null;
+        }
+
+
+        if (+display.textContent === 0) {
+            display.textContent = "";
+        }
+
+        let key = document.createTextNode(e.key);
+        display.appendChild(key);
+    } else if (/[.]/.test(e.key)) {
+        addDecimal();
+    } else if (/[c]/.test(e.key)) {
+        clearText();
+    } else if (e.key.includes("=") || e.key.includes("Enter")) {
+        equalsFunction();
+    } else if (/[+]/.test(e.key)) {
+        firstNumber = +display.textContent;
+        operatorPressed = addNode;
+        operatorPressed.setAttribute("class", "operatorPressed");
+        operator = addNode.textContent;
+    } else if (e.key.includes("-")) {
+        firstNumber = +display.textContent;
+        operatorPressed = subtractNode;
+        operatorPressed.setAttribute("class", "operatorPressed");
+        operator = subtractNode.textContent;
+    }
+    else if (/[*]/.test(e.key)) {
+        firstNumber = +display.textContent;
+        operatorPressed = multiplyNode;
+        operatorPressed.setAttribute("class", "operatorPressed");
+        operator = multiplyNode.textContent;
+    } else if (/[/]/.test(e.key)) {
+        firstNumber = +display.textContent;
+        operatorPressed = divideNode;
+        operatorPressed.setAttribute("class", "operatorPressed");
+        operator = divideNode.textContent;
+    } else if (/[%]/.test(e.key)) {
+        percentFunction();
+    } else {
+    }
+
 });
 
 operations.forEach((operation) => {
@@ -76,14 +170,9 @@ operations.forEach((operation) => {
     })
 });
 
-clear.addEventListener("click", () => {
-    display.textContent = "0";
-
-    console.log(operatorPressed);
-});
+clear.addEventListener("click", clearText);
 
 opposite.addEventListener("click", () => {
-    console.log(+display.textContent)
     if (+display.textContent < 0) {
         display.textContent = +display.textContent - (+display.textContent * 2);
     } else {
@@ -91,30 +180,6 @@ opposite.addEventListener("click", () => {
     }
 });
 
-percent.addEventListener("click", () => {
-    display.textContent = +display.textContent / 100;
-});
-
-decimal.addEventListener("click", () => {
-    if (display.textContent.includes(".")) {
-
-    } else {
-        display.appendChild(document.createTextNode("."));
-    }
-});
-
-equals.addEventListener("click", () => {
-
-    if (operator === null) {
-
-    } else {
-        secondNumber = +display.textContent;
-
-        // Round answer to two decimal places
-        display.textContent = Math.round(operate(firstNumber, secondNumber, operator) * 100) / 100;
-
-        secondNumber = null;
-        operator = null;
-    }
-
-});
+percent.addEventListener("click", percentFunction);
+decimal.addEventListener("click", addDecimal);
+equals.addEventListener("click", equalsFunction);
