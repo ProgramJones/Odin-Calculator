@@ -59,15 +59,26 @@ function appendToDisplay() {
     }
 
 
-    if (+display.textContent === 0) {
+    if ((+display.textContent === 0 && !display.textContent.includes(".")) ||
+        display.textContent == Infinity) {
         display.textContent = "";
     }
 
     let number = document.createTextNode(this.textContent);
     display.appendChild(number);
+
+    clear.textContent = "C";
 }
 
 function addDecimal() {
+    if (operatorPressed) {
+        display.textContent = "0";
+
+        operatorPressed.classList.remove("operatorPressed");
+        operatorPressed = null;
+    }
+
+
     if (display.textContent.includes(".")) {
 
     } else {
@@ -76,11 +87,20 @@ function addDecimal() {
 }
 
 function clearText() {
+
     display.textContent = "0";
 
-    firstNumber = null;
-    secondNumber = null;
-    operator = null;
+    if (operatorPressed != null) {
+        operatorPressed.removeAttribute("class", "operatorPressed");
+    }
+
+    if (clear.textContent === "C") {
+        clear.textContent = "AC";
+        secondNumber = null;
+    } else {
+        firstNumber = null;
+        operator = null;
+    }
 }
 
 function equalsFunction() {
@@ -115,6 +135,7 @@ document.addEventListener("keydown", (e) => {
             display.textContent = "0";
 
             operatorPressed.classList.remove("operatorPressed");
+
             operatorPressed = null;
         }
 
@@ -125,36 +146,59 @@ document.addEventListener("keydown", (e) => {
 
         let key = document.createTextNode(e.key);
         display.appendChild(key);
+
+        clear.textContent = "C";
     } else if (/[.]/.test(e.key)) {
         addDecimal();
-    } else if (/[c]/.test(e.key)) {
+    } else if (e.key.includes("c")) {
         clearText();
     } else if (e.key.includes("=") || e.key.includes("Enter")) {
         equalsFunction();
     } else if (/[+]/.test(e.key)) {
         firstNumber = +display.textContent;
+
+        if (operatorPressed != null) {
+            operatorPressed.removeAttribute("class", "operatorPressed");
+        }
         operatorPressed = addNode;
         operatorPressed.setAttribute("class", "operatorPressed");
+
         operator = addNode.textContent;
     } else if (e.key.includes("-")) {
         firstNumber = +display.textContent;
+
+        if (operatorPressed != null) {
+            operatorPressed.removeAttribute("class", "operatorPressed");
+        }
         operatorPressed = subtractNode;
         operatorPressed.setAttribute("class", "operatorPressed");
+
         operator = subtractNode.textContent;
     }
     else if (/[*]/.test(e.key)) {
         firstNumber = +display.textContent;
+
+        if (operatorPressed != null) {
+            operatorPressed.removeAttribute("class", "operatorPressed");
+        }
         operatorPressed = multiplyNode;
         operatorPressed.setAttribute("class", "operatorPressed");
+
         operator = multiplyNode.textContent;
     } else if (/[/]/.test(e.key)) {
         firstNumber = +display.textContent;
+
+        if (operatorPressed != null) {
+            operatorPressed.removeAttribute("class", "operatorPressed");
+        }
         operatorPressed = divideNode;
         operatorPressed.setAttribute("class", "operatorPressed");
+
         operator = divideNode.textContent;
     } else if (/[%]/.test(e.key)) {
         percentFunction();
     } else {
+
     }
 
 });
@@ -165,6 +209,9 @@ operations.forEach((operation) => {
         firstNumber = +display.textContent;
         operator = operation.textContent;
 
+        if (operatorPressed != null) {
+            operatorPressed.removeAttribute("class", "operatorPressed");
+        }
         operatorPressed = document.querySelector(`#${operation.getAttribute("id")}`);
         operatorPressed.setAttribute("class", "operatorPressed");
     })
