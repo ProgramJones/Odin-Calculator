@@ -78,6 +78,10 @@ function addDecimal() {
         operatorPressed = null;
     }
 
+    if ((+display.textContent === 0 && !display.textContent.includes(".")) ||
+        display.textContent == Infinity) {
+        display.textContent = "";
+    }
 
     if (display.textContent.includes(".")) {
 
